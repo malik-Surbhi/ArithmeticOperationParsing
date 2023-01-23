@@ -12,7 +12,8 @@ import libraryMain.Node;
 
 public class ArithmeticExpressionTree {
 
-	static String exp = "Add (Const -72.45) (Mult (Const 4) (Add (Sqrt (Const 8)) (Exp (Const 10) (Const 4))))";
+	static String exp = "Add (Const -72.45) (Mult (Const 4) (Add (Sqrt (Const 8))(Const 10)";
+	//static String exp = "Add (Const 8) (Const 10) (Const 11)";
 	static HashMap<String, Double> variables = new HashMap<String, Double>();
 	static ArrayList<String> validTokens = new ArrayList<String>();
 	static Stack<Character> stack = new Stack<Character>();
@@ -130,18 +131,43 @@ public class ArithmeticExpressionTree {
 
 		switch (ast.token) {
 		case "Add":
+			if (ast.children.size() != 2) {
+				throw new Exception("Wrong number of arguments for Addition! Expected 2, Found " + ast.children.size());
+			}
 			return ArithmeticExpressionEvaluation.evaluateAdd(leftNode, rightNode);
 		case "Mult":
+			if (ast.children.size() != 2) {
+				throw new Exception("Wrong number of argument for Multiplication! Expected 2, Found " + ast.children.size());
+			}
 			return ArithmeticExpressionEvaluation.evaluateMul(leftNode, rightNode);
 		case "Sqrt":
-			return ArithmeticExpressionEvaluation.evaluateSqrt(leftNode);
+			if (ast.children.size() != 1) {
+				throw new Exception("Wrong number of arguments for Square Root! Expected 1, Found " + ast.children.size());
+			}
+			double result = ArithmeticExpressionEvaluation.evaluateSqrt(leftNode);
+			if (Double.isNaN(result)) {
+				throw new Exception("Negative value for Square Root is not allowed!");
+			}
+			return result;
 		case "Exp":
+			if(ast.children.size()!= 2) {
+				throw new Exception("Wrong number of arguments for Exponential! Expected 2, Found "+ ast.children.size());
+			}
 			return ArithmeticExpressionEvaluation.evaluateExp(leftNode, rightNode);
 		case "Const":
+			if(ast.children.size()!= 1) {
+				throw new Exception("Wrong number of arguments for Constant! Expected 1, Found "+ ast.children.size());
+			}
 			return Double.parseDouble(leftNode.token);
 		case "Var":
+			if(ast.children.size()!= 1) {
+				throw new Exception("Wrong number of arguments for Variable! Expected 1, Found "+ ast.children.size());
+			}
 			return variables.get(leftNode.token);
 		case "Neg":
+			if(ast.children.size()!= 1) {
+				throw new Exception("Wrong number of arguments for Negation! Expected 1, Found "+ ast.children.size());
+			}
 			return Double.parseDouble(leftNode.token) * -1;
 		default:
 			throw new Exception(ast.token);
