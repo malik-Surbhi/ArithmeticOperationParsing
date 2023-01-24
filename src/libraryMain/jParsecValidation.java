@@ -36,12 +36,12 @@ public class jParsecValidation {
 		    Parser.Reference<Double> ref = Parser.newReference();
 		    Parser<Double> unit = ref.lazy().between(term("("), term(")")).or(atom);
 		    Parser<Double> parser = new OperatorTable<Double>()
-		        .infixr(op("Add", (l, r) -> l + r), 10)
-		        .infixl(op("Sub", (l, r) -> l - r), 10)
-		        .infixl(Parsers.or(term("Mul"), WHITESPACE_MUL).retn((l, r) -> l * r), 20)
-		        .infixl(op("Div", (l, r) -> l / r), 20)
+		        .infixr(op("Add", (l, r) -> l + r), 1)
+		        .infixl(op("Sub", (l, r) -> l - r), 2)
+		        .infixl(Parsers.or(term("Mul"), WHITESPACE_MUL).retn((l, r) -> l * r), 3)
+		        .infixl(op("Div", (l, r) -> l / r), 4)
 		        .infixl(op("Pow", (l, r) -> Math.pow(l, r)),0)
-		        .prefix(op("Sqrt", v -> Math.sqrt(v)), 0)
+		        .prefix(op("Sqrt", v -> Math.sqrt(v)), 5)
 		        .prefix(op("Neg", v -> -v), 30)
 		        .build(unit);
 		    ref.set(parser);
@@ -52,7 +52,9 @@ public class jParsecValidation {
 		      calculator(NUMBER).from(TOKENIZER, IGNORED);
 		  
 		  public static void main (String args[]) {
-			  System.out.println(CALCULATOR.parse("4Add(Sqrt(2Pow(24Sub10)))")); 
+			  System.out.println(CALCULATOR.parse("(4)Add(Sqrt(2Pow((24)Sub(10))))")); 
+			  System.out.println(CALCULATOR.parse("Neg4")); 
+			  System.out.println(CALCULATOR.parse("(3)Sub(2)")); 
 		  }
 		 
 	
