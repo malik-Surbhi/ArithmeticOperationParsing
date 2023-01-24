@@ -12,7 +12,7 @@ public class jParsecValidation {
 		      Terminals.DecimalLiteral.PARSER.map(Double::valueOf);
 		     
 		  private static final Terminals OPERATORS =
-		      Terminals.operators("Add", "Mul", "Sqrt", "Sub", "(", ")", "Neg");
+		      Terminals.operators("Add", "Mul", "Sqrt", "Sub", "(", ")", "Neg", "Div", "Pow");
 		  
 		  static final Parser<Void> IGNORED = Parsers.or(
 		      Scanners.JAVA_LINE_COMMENT,
@@ -26,7 +26,7 @@ public class jParsecValidation {
 		    return OPERATORS.token(names);
 		  }
 		  
-		  static final Parser<?> WHITESPACE_MUL = term("Add", "Sub", "Mul", "Sqrt").not();
+		  static final Parser<?> WHITESPACE_MUL = term("Add", "Sub", "Mul", "Sqrt", "Neg", "Div", "Pow").not();
 		  
 		  static <T> Parser<T> op(String name, T value) {
 		    return term(name).retn(value);
@@ -36,10 +36,12 @@ public class jParsecValidation {
 		    Parser.Reference<Double> ref = Parser.newReference();
 		    Parser<Double> unit = ref.lazy().between(term("("), term(")")).or(atom);
 		    Parser<Double> parser = new OperatorTable<Double>()
-		        .infixl(op("Add", (l, r) -> l + r), 10)
+		        .infixr(op("Add", (l, r) -> l + r), 10)
 		        .infixl(op("Sub", (l, r) -> l - r), 10)
 		        .infixl(Parsers.or(term("Mul"), WHITESPACE_MUL).retn((l, r) -> l * r), 20)
-		        .infixl(op("Sqrt", (l, r) -> l / r), 20)
+		        .infixl(op("Div", (l, r) -> l / r), 20)
+		        .infixl(op("Pow", (l, r) -> Math.pow(l, r)),0)
+		        .prefix(op("Sqrt", v -> Math.sqrt(v)), 0)
 		        .prefix(op("Neg", v -> -v), 30)
 		        .build(unit);
 		    ref.set(parser);
@@ -50,7 +52,7 @@ public class jParsecValidation {
 		      calculator(NUMBER).from(TOKENIZER, IGNORED);
 		  
 		  public static void main (String args[]) {
-			  CALCULATOR.parse("Add(3)(5)");
+			  System.out.println(CALCULATOR.parse("4Add(Sqrt(2Pow(24Sub10)))")); 
 		  }
 		 
 	
