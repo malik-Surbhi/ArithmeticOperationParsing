@@ -6,4 +6,5 @@
  *
  */
 module ExpressionLibrary {
+	requires org.jparsec;
 }

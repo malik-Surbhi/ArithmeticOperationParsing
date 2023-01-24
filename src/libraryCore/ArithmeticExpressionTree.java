@@ -12,7 +12,7 @@ import libraryMain.Node;
 
 public class ArithmeticExpressionTree {
 
-	static String exp = "Add (Const -72.45) (Mult (Const 4) (Add (Sqrt (Const 8))(Const 10)";
+	static String exp = "Add (Const -72.45) (Mult (Const 4) (Add (Sqrt (Const 8)) (Const 10)))";
 	//static String exp = "Add (Const 8) (Const 10) (Const 11)";
 	static HashMap<String, Double> variables = new HashMap<String, Double>();
 	static ArrayList<String> validTokens = new ArrayList<String>();
@@ -33,8 +33,9 @@ public class ArithmeticExpressionTree {
 					tokens.add(Character.toString(ch));
 				} else if (ch == ')') {
 					if (stack.size() > 0) {
-						if (stack.pop() != '(')
+						if (stack.pop() != '(') {
 							throw new Exception("Brackets are not correctly added");
+						}
 					} else if (stack.size() == 0) {
 						throw new Exception("Brackets are not correctly added, found wrong bracket at position "
 								+ expression.indexOf(ch));
